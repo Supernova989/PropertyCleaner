@@ -110,12 +110,12 @@ func main() {
 	}
 
 	for _, dict := range dictPaths {
-		createDictFiles(usedLines, buildDir, dict, "")
-		createDictFiles(ignoredLines, buildDir, dict, "ignored_")
+		createDictFile(usedLines, buildDir, dict, "")
+		createDictFile(ignoredLines, buildDir, dict, "ignored_")
 	}
 }
 
-func createDictFiles(d DictNameSpace, buildDir string, dict string, prefix string) {
+func createDictFile(d DictNameSpace, buildDir string, dict string, prefix string) {
 	filename := filepath.Base(dict)
 	f, err := os.OpenFile(path.Join(buildDir, prefix+filename), os.O_APPEND|os.O_CREATE|os.O_WRONLY, os.ModePerm)
 	if err != nil {
@@ -123,8 +123,7 @@ func createDictFiles(d DictNameSpace, buildDir string, dict string, prefix strin
 		return
 	}
 	for _, v := range d[filename] {
-		f.WriteString(v)
-		f.WriteString("\n")
+		f.WriteString(v + "\n")
 	}
 	f.Close()
 }
@@ -133,7 +132,7 @@ func getDictLines(contents string) []string {
 	lines := make([]string, 0)
 	sc := bufio.NewScanner(strings.NewReader(contents))
 	for sc.Scan() {
-		lines = append(lines, sc.Text())
+		lines = append(lines, strings.TrimRight(sc.Text(), " "))
 	}
 	return lines
 }
